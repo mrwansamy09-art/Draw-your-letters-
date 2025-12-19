@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="تطبيق تتبع الحروف العربية التفاعلي للأطفال">
+    <meta name="theme-color" content="#6366f1">
+    <title>تتبع الحروف العربية - Arabic Letter Tracing</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Header Section -->
+    <header class="app-header" role="banner">
+        <div class="header-container">
+            <h1 class="app-title">🎨 تتبع الحروف</h1>
+            <p class="app-subtitle">Arabic Letter Tracing for Kids</p>
+        </div>
+    </header>
+
+    <!-- Main Application Container -->
+    <main class="app-container" role="main">
+        <!-- Mode Selection Screen -->
+        <section id="modeScreen" class="screen active" role="region" aria-label="Mode Selection">
+            <div class="screen-content">
+                <h2 class="screen-title">اختر طريقة التعلم</h2>
+                <div class="mode-buttons">
+                    <button class="mode-button practice-mode" id="practiceBtn" aria-label="Practice Mode - اختبر مهاراتك">
+                        <span class="mode-icon">✏️</span>
+                        <span class="mode-text">
+                            <span class="mode-name">تمرين</span>
+                            <span class="mode-desc">Practice Mode</span>
+                        </span>
+                    </button>
+                    <button class="mode-button game-mode" id="gameBtn" aria-label="Game Mode - لعبة الحروف">
+                        <span class="mode-icon">🎮</span>
+                        <span class="mode-text">
+                            <span class="mode-name">لعبة</span>
+                            <span class="mode-desc">Game Mode</span>
+                        </span>
+                    </button>
+                </div>
+                <button class="secondary-button" id="analyticsBtn" aria-label="View Progress Analytics">
+                    <span class="icon">📊</span> إحصائيات
+                </button>
+            </div>
+        </section>
+
+        <!-- Letter Selection Screen -->
+        <section id="letterScreen" class="screen" role="region" aria-label="Letter Selection">
+            <div class="screen-content">
+                <h2 class="screen-title">اختر الحرف</h2>
+                <div class="letter-gallery" id="letterGallery" role="grid" aria-label="Available Letters">
+                    <!-- Letters will be dynamically inserted here -->
+                </div>
+                <button class="back-button" id="backToModeBtn" aria-label="Back to Mode Selection">
+                    <span class="arrow">←</span> رجوع
+                </button>
+            </div>
+        </section>
+
+        <!-- Main Tracing Screen -->
+        <section id="tracingScreen" class="screen" role="region" aria-label="Letter Tracing">
+            <div class="tracing-container">
+                <!-- Top Info Bar -->
+                <div class="tracing-header">
+                    <div class="letter-info">
+                        <h2 class="current-letter" id="currentLetterDisplay"></h2>
+                        <p class="letter-name" id="currentLetterName"></p>
+                    </div>
+                    <div class="tracing-controls">
+                        <button class="control-button" id="hintBtn" aria-label="Show Hint" title="Show hint">
+                            <span class="icon">💡</span>
+                        </button>
+                        <button class="control-button" id="resetBtn" aria-label="Reset Canvas" title="Clear and try again">
+                            <span class="icon">🔄</span>
+                        </button>
+                        <button class="control-button" id="backBtn" aria-label="Back to Letter Selection" title="Go back">
+                            <span class="icon">←</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Canvas Area -->
+                <div class="canvas-wrapper">
+                    <canvas id="tracingCanvas" 
+                            class="tracing-canvas" 
+                            width="400" 
+                            height="400"
+                            role="img"
+                            aria-label="Canvas for tracing letters">
+                        Your browser does not support the HTML5 canvas element.
+                    </canvas>
+                    <div class="loading-spinner" id="loadingSpinner" style="display: none;">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="progress-section">
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="progressBar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
+                    </div>
+                    <p class="progress-text" id="progressText">0% مكتمل</p>
+                </div>
+
+                <!-- Feedback Section -->
+                <div class="feedback-section">
+                    <p class="feedback-message" id="feedbackMessage" role="status" aria-live="polite"></p>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button class="secondary-button" id="showLetterInfoBtn" aria-label="Show Letter Information">
+                        <span class="icon">ℹ️</span> معلومات
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Completion Screen -->
+        <section id="completionScreen" class="screen" role="region" aria-label="Completion Screen">
+            <div class="screen-content completion-content">
+                <div class="celebration-animation">
+                    <div class="confetti-container" id="confettiContainer"></div>
+                </div>
+                
+                <h2 class="completion-title" id="completionTitle">ممتاز! 🎉</h2>
+                <p class="completion-message" id="completionMessage">لقد أتممت تتبع الحرف بنجاح!</p>
+                
+                <div class="stars-container" id="starsContainer">
+                    <!-- Stars will be inserted here -->
+                </div>
+
+                <div class="completion-stats">
+                    <div class="stat">
+                        <span class="stat-label">الدقة</span>
+                        <span class="stat-value" id="accuracyStat">0%</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">الوقت</span>
+                        <span class="stat-value" id="timeStat">0s</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">المحاولات</span>
+                        <span class="stat-value" id="attemptsStat">1</span>
+                    </div>
+                </div>
+
+                <div class="completion-buttons">
+                    <button class="primary-button" id="nextLetterBtn" aria-label="Practice Next Letter">
+‎                        الحرف التالي →
+                    </button>
+                    <button class="secondary-button" id="retryLetterBtn" aria-label="Try Again">
+‎                        محاولة أخرى
+                    </button>
+                    <button class="secondary-button" id="backToLettersBtn" aria-label="Back to Letter Selection">
+‎                        ← الأحرف
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Analytics Screen -->
+        <section id="analyticsScreen" class="screen" role="region" aria-label="Progress Analytics">
+            <div class="screen-content">
+                <h2 class="screen-title">📊 التقدم والإحصائيات</h2>
+                
+                <div class="analytics-overview">
+                    <div class="analytics-card">
+                        <h3>إجمالي المحاولات</h3>
+                        <p class="analytics-value" id="totalAttemptsValue">0</p>
+                    </div>
+                    <div class="analytics-card">
+                        <h3>متوسط الدقة</h3>
+                        <p class="analytics-value" id="avgAccuracyValue">0%</p>
+                    </div>
+                    <div class="analytics-card">
+                        <h3>الحروف المتقنة</h3>
+                        <p class="analytics-value" id="masteredLettersValue">0</p>
+                    </div>
+                    <div class="analytics-card">
+                        <h3>وقت اللعب</h3>
+                        <p class="analytics-value" id="totalTimeValue">0h</p>
+                    </div>
+                </div>
+
+                <div class="analytics-details">
+                    <h3>تفاصيل كل حرف</h3>
+                    <div class="letter-stats-list" id="letterStatsList">
+                        <!-- Letter statistics will be inserted here -->
+                    </div>
+                </div>
+
+                <div class="analytics-buttons">
+                    <button class="secondary-button" id="exportReportBtn" aria-label="Export Progress Report">
+                        <span class="icon">📥</span> تصدير التقرير
+                    </button>
+                    <button class="secondary-button" id="resetProgressBtn" aria-label="Reset All Progress">
+                        <span class="icon">⚠️</span> إعادة تعيين
+                    </button>
+                    <button class="back-button" id="backToModeBtn2" aria-label="Back to Mode Selection">
+                        <span class="arrow">←</span> رجوع
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Letter Info Modal -->
+        <div class="modal" id="letterInfoModal" role="dialog" aria-labelledby="modalTitle">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modalTitle">معلومات الحرف</h3>
+                    <button class="close-button" id="closeModalBtn" aria-label="Close modal">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="letter-info-grid">
+                        <div class="info-item">
+                            <label>الحرف</label>
+                            <p id="modalLetterChar"></p>
+                        </div>
+                        <div class="info-item">
+                            <label>النطق</label>
+                            <p id="modalLetterPronunciation"></p>
+                        </div>
+                        <div class="info-item">
+                            <label>الصعوبة</label>
+                            <p id="modalLetterDifficulty"></p>
+                        </div>
+                        <div class="info-item">
+                            <label>كلمة مثال</label>
+                            <p id="modalLetterWord"></p>
+                        </div>
+                        <div class="info-item">
+                            <label>معنى الكلمة</label>
+                            <p id="modalWordMeaning"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Panel -->
+        <div class="settings-panel" id="settingsPanel" role="region" aria-label="Settings">
+            <div class="settings-header">
+                <h3>الإعدادات</h3>
+                <button class="close-button" id="closeSettingsBtn" aria-label="Close settings">×</button>
+            </div>
+            <div class="settings-content">
+                <div class="setting-item">
+                    <label for="audioToggle">تفعيل الصوت</label>
+                    <input type="checkbox" id="audioToggle" checked>
+                </div>
+                <div class="setting-item">
+                    <label for="highContrastToggle">وضع التباين العالي</label>
+                    <input type="checkbox" id="highContrastToggle">
+                </div>
+                <div class="setting-item">
+                    <label for="sensitivitySlider">حساسية التتبع (1-10)</label>
+                    <input type="range" id="sensitivitySlider" min="1" max="10" value="5">
+                </div>
+                <div class="setting-item">
+                    <label for="dotGuideToggle">إظهار النقاط الدليلية</label>
+                    <input type="checkbox" id="dotGuideToggle" checked>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Button (Floating) -->
+        <button class="floating-button settings-button" id="settingsBtn" aria-label="Open Settings">
+            ⚙️
+        </button>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer" role="contentinfo">
+        <p>&copy; 2025 تطبيق تتبع الحروف العربية | Arabic Letter Tracing App</p>
+        <p class="footer-note">تم تصميمه خصيصاً للأطفال | Designed for Children</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="letters-data.js" defer></script>
+    <script src="script.js" defer></script>
+
+    <!-- Audio Elements (for sound feedback) -->
+    <audio id="successSound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAAB9AAACABAAZGF0YQIAAAAAAA==" type="audio/wav">
+    </audio>
+    <audio id="completeSound" preload="auto">
+        <source src="data: audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAAB9AAACABAAZGF0YQIAAAAAAA==" type="audio/wav">
+    </audio>
+</body>
+</html>
